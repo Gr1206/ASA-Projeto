@@ -7,6 +7,12 @@ using namespace std;
 // os prints documentados é para verificar que o input está mesmo
 //a ser bem lido
 
+int afs[4][4] = {
+    {1, 3, 1, 3},
+    {5, 1, 0, 1},
+    {1, 3, 2, 3}
+};
+
 int main(){
     ifstream inputFile("input/input2.txt");
     int n;
