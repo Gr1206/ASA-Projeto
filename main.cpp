@@ -1,10 +1,6 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
-#include <stack>
-#include <utility>
-#include <algorithm>
 using namespace std;
 
 
@@ -74,24 +70,25 @@ void printOutputSequence(vector<int> sequencia, int n){
 }
 
 int main(){
-    ifstream inputFile("input/input2.txt");
-    int n;
-    inputFile >> n; //nº de aminoácidos na sequência
+
+    int n ; //nº de aminoácidos
+    cin >> n;
+    
 
     vector<int> potencial(n+2); //guardar potenciais
     potencial[0] = 1; //T inicial
     for(int i = 1; i <= n; i++){ 
-        inputFile >> potencial[i]; 
+        cin >> potencial[i]; 
     }
     potencial[n+1] = 1; //T final
     
     string aminoacidos;
-    inputFile >> aminoacidos; //ler a cadeia de AA's
+    cin >> aminoacidos;  //ler a cadeia de AA's
     aminoacidos = 'T' + aminoacidos;
     aminoacidos += 'T';
     
  
-    inputFile.close();
+
 
     vector<vector<int>> cache(n+2, vector<int>(n+2, 0)); //matriz para armazenar tabela
     
