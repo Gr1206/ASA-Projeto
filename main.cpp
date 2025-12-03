@@ -7,17 +7,7 @@
 #include <algorithm>
 using namespace std;
 
-// os prints documentados é para verificar que o input está mesmo
-//a ser bem lido
-/* caso seja 
-// vai ser preciso mapear letras para estes indices talvez
-T Af(T,c) ou Af(c,T) é sempre igual a 1 (depois meter um if?)
-Af P N A B
-P 1 3 1 3
-N 5 1 0 1
-A 0 1 0 4
-B 1 3 2 3
-*/
+
 int afs[4][4] = {
     {1, 3, 1, 3},
     {5, 1, 0, 1},
@@ -64,31 +54,6 @@ int cost(int a, int i, int j, vector<int> potencial, string sequencia){
     return energia;
 }
 
-vector<int> optimalSequence(vector<vector<int>> optimal, vector<vector<int>> cache, int n){
-    vector<int> sequencia(n);
-    int x = n - 1;
-    int a = 1;
-    for(int i = 1, j = n; i != j; x--){
-        sequencia[x] = optimal[i][j];
-
-        if(cache[i+1][j] >= cache[i][j-1]){
-            for(int y = x; y >= 0; y--){
-                if(optimal[i+1][j] == sequencia[y]){
-                    int a = 0;
-                }
-            }
-            if(a == 1){
-                i++;
-            }
-        }
-        else{
-            j--;
-        }
-
-    }
-
-    return sequencia;
-}
 
 void optimalSequenceRec(vector<vector<int>> optimal, int i, int j, vector<int>& res){
     if(i > j){
@@ -100,10 +65,18 @@ void optimalSequenceRec(vector<vector<int>> optimal, int i, int j, vector<int>& 
     res.push_back(k);
 }
 
+
+void printOutputSequence(vector<int> sequencia, int n){
+    for(int i = 0; i < n ; i++){
+        cout << sequencia[i] << ' ';
+    }
+    cout << endl;
+}
+
 int main(){
     ifstream inputFile("input/input2.txt");
     int n;
-    inputFile >> n; //número de aminoácidos na sequência
+    inputFile >> n; //nº de aminoácidos na sequência
 
     vector<int> potencial(n+2); //guardar potenciais
     potencial[0] = 1; //T inicial
@@ -130,7 +103,6 @@ int main(){
         for(int r = l; r <= n ; r++){
             for(int k = l; k <= r; k++){
                 total = cost(k, l, r, potencial, aminoacidos) + cache[l][k-1] + cache[k+1][r];
-                //cout << total << ' ' << k << ' ' << endl;
                 if (total > cache[l][r]){                    
                     cache[l][r] = total;
                     optimal[l][r] = k;
@@ -144,32 +116,14 @@ int main(){
     }
     
     
-    vector<int> sequencia = optimalSequence(optimal, cache, n);
-    vector<int> sequenciaReq;
-    optimalSequenceRec(optimal, 1, n, sequenciaReq);
+    vector<int> sequencia;
+    optimalSequenceRec(optimal, 1, n, sequencia);
+
+    //print energia
     cout << cache[1][n] << endl;
-    cout << optimal[1][n] << endl;
 
-    for(int i = 0; i <=n; i++){
-        for(int j = 0; j<=n; j++){
-            cout << cache[i][j] << ' ';
-        }
-        cout << endl;
-    }
-    cout << endl;
-
-    for(int i = 0; i <= n; i++){
-        for(int j = 0; j <= n; j++){
-            cout << optimal[i][j] << ' ';
-        }
-        cout << endl;
-    }
-    
-
-    for(int i = 0; i < n; i++){
-        cout << sequenciaReq[i] << ' ';
-    } 
-    cout << endl; 
+    //output sequencia final
+    printOutputSequence(sequencia, n);
 
     return 0;
 
