@@ -28,22 +28,22 @@ int letraIndex(char c){
 }
 
 
+
+
 int afinidade(char a1, char a2){
     if(a1 == 'T' || a2 == 'T'){
         return 1;
     }
-    
+
     return afs[letraIndex(a1)][letraIndex(a2)];
 }
 
-char getChar(int a, string sequencia){
-    return sequencia[a];
-}
 
-int cost(int a, int i, int j, vector<int> potencial, string sequencia){
+
+unsigned long long cost(int a, int i, int j, vector<int> potencial, string sequencia){
     //Pi−1 ×Af(C(i−1),C(i))×Pi +Pi ×Af(C(i),C(i+1))×Pi+1
-    int energia = (potencial[i-1] * afinidade(getChar(i-1, sequencia), getChar(a, sequencia)) * 
-    potencial[a]) + (potencial[a] * afinidade(getChar(a, sequencia), getChar(j+1, sequencia)) * potencial[j+1]);
+    unsigned long long energia = (potencial[i-1] * afinidade(sequencia[i-1], sequencia[a]) * 
+    potencial[a]) + (potencial[a] * afinidade(sequencia[a], sequencia[j+1]) * potencial[j+1]);
 
     return energia;
 }
@@ -85,18 +85,19 @@ int main(){
     
     string aminoacidos;
     cin >> aminoacidos;  //ler a cadeia de AA's
-    aminoacidos = 'T' + aminoacidos;
-    aminoacidos += 'T';
+    aminoacidos = 'T' + aminoacidos + 'T';
+
     
  
 
 
-    vector<vector<int>> cache(n+2, vector<int>(n+2, 0)); //matriz para armazenar tabela
+    vector<vector<unsigned long long>> cache(n+2, vector<unsigned long long>(n+2, 0)); //matriz para armazenar tabela
     
     vector<vector<int>> optimal(n + 2, vector<int>(n + 2, 0));//ultimo aminoácido a removeer
 
-    int total = 0;
-   
+    unsigned long long total = 0;
+
+    
     for(int l = n; l >= 0; l--){  
         for(int r = l; r <= n ; r++){
             for(int k = l; k <= r; k++){
@@ -105,7 +106,7 @@ int main(){
                     cache[l][r] = total;
                     optimal[l][r] = k;
                 }else if(total == cache[l][r]){
-                    if(getChar(k, aminoacidos) < getChar(optimal[l][r], aminoacidos)){
+                    if(aminoacidos[k] < aminoacidos[optimal[l][r]]){
                         optimal[l][r] = k;
                     }
                 }
