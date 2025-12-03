@@ -37,8 +37,6 @@ int afinidade(char a1, char a2){
 }
 
 char getChar(int a, string sequencia){
-    char c; //char do aminoacido correspondente ao index a
-
     return sequencia[a];
 }
 
@@ -63,13 +61,16 @@ void optimalSequenceRec(vector<vector<int>> optimal, int i, int j, vector<int>& 
 
 
 void printOutputSequence(vector<int> sequencia, int n){
-    for(int i = 0; i < n ; i++){
-        cout << sequencia[i] << ' ';
+    cout << sequencia[0];
+    for(int i = 1; i < n ; i++){
+        cout << ' ' << sequencia[i];
     }
     cout << endl;
 }
 
 int main(){
+    ios::sync_with_stdio(0);
+    cin.tie(0);
 
     int n ; //nº de aminoácidos
     cin >> n;
