@@ -4,6 +4,7 @@
 #include <vector>
 #include <stack>
 #include <utility>
+#include <algorithm>
 using namespace std;
 
 // os prints documentados é para verificar que o input está mesmo
@@ -43,7 +44,6 @@ int letraIndex(char c){
 
 int afinidade(char a1, char a2){
     if(a1 == 'T' || a2 == 'T'){
-        cout << a1 << a2 << endl;
         return 1;
     }
     
@@ -64,7 +64,41 @@ int cost(int a, int i, int j, vector<int> potencial, string sequencia){
     return energia;
 }
 
+vector<int> optimalSequence(vector<vector<int>> optimal, vector<vector<int>> cache, int n){
+    vector<int> sequencia(n);
+    int x = n - 1;
+    int a = 1;
+    for(int i = 1, j = n; i != j; x--){
+        sequencia[x] = optimal[i][j];
 
+        if(cache[i+1][j] >= cache[i][j-1]){
+            for(int y = x; y >= 0; y--){
+                if(optimal[i+1][j] == sequencia[y]){
+                    int a = 0;
+                }
+            }
+            if(a == 1){
+                i++;
+            }
+        }
+        else{
+            j--;
+        }
+
+    }
+
+    return sequencia;
+}
+
+void optimalSequenceRec(vector<vector<int>> optimal, int i, int j, vector<int>& res){
+    if(i > j){
+        return;
+    }
+    int k = optimal[i][j];
+    optimalSequenceRec(optimal, i, k-1 , res);
+    optimalSequenceRec(optimal, k+1, j, res);
+    res.push_back(k);
+}
 
 int main(){
     ifstream inputFile("input/input2.txt");
@@ -75,43 +109,67 @@ int main(){
     potencial[0] = 1; //T inicial
     for(int i = 1; i <= n; i++){ 
         inputFile >> potencial[i]; 
-       //cout << potencial[i] << " ";
     }
     potencial[n+1] = 1; //T final
-    // cout << endl;
     
     string aminoacidos;
     inputFile >> aminoacidos; //ler a cadeia de AA's
     aminoacidos = 'T' + aminoacidos;
-    aminoacidos.push_back('T');
-    cout << aminoacidos << endl;
+    aminoacidos += 'T';
+    
+ 
     inputFile.close();
 
     vector<vector<int>> cache(n+2, vector<int>(n+2, 0)); //matriz para armazenar tabela
     
-    vector<vector<int>> optimal(n + 2, vector<int>(n + 2, 0));
+    vector<vector<int>> optimal(n + 2, vector<int>(n + 2, 0));//ultimo aminoácido a removeer
 
-    //loop para ir aumentando o tamanho de L do problema
-    // l = 1 [a1]; L = 2 [a1, a2]; L = 3 [a1, a2, a3] ...
-    //dentro de cada um destes temos de escolher um para tirar em último
-    //dentro de cada um deste que damos pop a todos e escolhemos o máximo deste pop
     int total = 0;
-
-    for(int l = 1; l <= n; l++){
-        for(int i = 1; i <= n - l + 1; i++){
-            int j = i + l - 1;
-            cache[i][j] = 0;
-            for(int k = i; k <= j ;k++){
-                int total = cost(k, i, j, potencial, aminoacidos) + cache[i][k-1] + cache[k+1][j];
-                if(total > cache[i][j]){
-                    cache[i][j] = total;
-                    optimal[i][j] = k; //aminoacido optimo para cada sub intervalo
+   
+    for(int l = n; l >= 0; l--){  
+        for(int r = l; r <= n ; r++){
+            for(int k = l; k <= r; k++){
+                total = cost(k, l, r, potencial, aminoacidos) + cache[l][k-1] + cache[k+1][r];
+                //cout << total << ' ' << k << ' ' << endl;
+                if (total > cache[l][r]){                    
+                    cache[l][r] = total;
+                    optimal[l][r] = k;
+                }else if(total == cache[l][r]){
+                    if(getChar(k, aminoacidos) < getChar(optimal[l][r], aminoacidos)){
+                        optimal[l][r] = k;
+                    }
                 }
             }
         }
     }
+    
+    
+    vector<int> sequencia = optimalSequence(optimal, cache, n);
+    vector<int> sequenciaReq;
+    optimalSequenceRec(optimal, 1, n, sequenciaReq);
     cout << cache[1][n] << endl;
+    cout << optimal[1][n] << endl;
 
+    for(int i = 0; i <=n; i++){
+        for(int j = 0; j<=n; j++){
+            cout << cache[i][j] << ' ';
+        }
+        cout << endl;
+    }
+    cout << endl;
+
+    for(int i = 0; i <= n; i++){
+        for(int j = 0; j <= n; j++){
+            cout << optimal[i][j] << ' ';
+        }
+        cout << endl;
+    }
+    
+
+    for(int i = 0; i < n; i++){
+        cout << sequenciaReq[i] << ' ';
+    } 
+    cout << endl; 
 
     return 0;
 
